@@ -10,3 +10,8 @@ class Goods(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Cart(models.Model):
+    date_created = models.DateTimeField(auto_now_add=True)
+    items = models.ManyToManyField(Goods)
