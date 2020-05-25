@@ -1,16 +1,13 @@
 from django.urls import include, path
 from django.conf.urls import url
 from . import views
-from django.urls import include, path
-from rest_framework import routers
 
 app_name = 'store'
-router = routers.DefaultRouter()
-router.register(r'allgames', views.GoodsViewSet, basename='allgames')
-router.register(r'cart', views.CartViewSet, basename='cart')
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('allgames/',views.GoodsViewSet),
-    path('cart/', views.CartViewSet),
+    # url(r'orders', views.OrdersView.as_view(), name='orders'),
+    url(r'^$', views.GamesListView.as_view(), name='games-list'),
+    url(r'^(?P<slug>[\w-]+)/$', views.GamesDetailView.as_view(), name='games-item'),
+    url(r'^(?P<slug>[\w-]+)/update', views.GamesUpdateView.as_view(), name='games-update'),
+    url(r'^(?P<slug>[\w-]+)/delete', views.GamesDeleteView.as_view(), name='games-delete'),
 ]
