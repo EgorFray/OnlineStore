@@ -1,5 +1,7 @@
 from django.db import models
 from rest_framework.reverse import reverse
+from django.utils.text import slugify
+
 
 # Create your models here.
 class Goods(models.Model):
@@ -8,16 +10,42 @@ class Goods(models.Model):
     price = models.CharField(max_length=20, null=False, blank=False)
     slug = models.SlugField(blank=True, unique=False)
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Goods, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.title
 
 
 class Orders(models.Model):
+    DELIVERY_CHOICES = [
+        ('Nova poshta', 'Nova poshta'),
+        ('Ukrposhta', 'Ukrposhta'),
+        ('Self PickUp', 'Self PickUp')
+    ]
+    PAYMENT_CHOICES = [
+        ('Card', 'Card'),
+        ('Cash', 'Cash')
+    ]
+    order_name = models.CharField(max_length=20, default='Order name')
     date_created = models.DateTimeField(auto_now_add=True)
-    items = models.ManyToManyField(Goods)
-    delivery_method = models.CharField(max_length=30, default='')
-    payment_method = models.CharField(max_length=30, default='')
+    items = models.ForeignKey(Goods, on_delete=models.CASCADE, default='')
+    delivery_method = models.CharField(max_length=30, choices=DELIVERY_CHOICES, default='')
+    payment_method = models.CharField(max_length=30, choices=PAYMENT_CHOICES, default='')
 
     def __str__(self):
-        return self.items
+        return self.order_name
+
+
+class OrdersDetail(models.Model):
+    COUNTRY_CHOICES = [
+        ('Ukraine', 'Ukraine'),
+        ('Russia', 'Russia')
+    ]
+    order_name = models.ForeignKey(Orders, on_delete=models.CASCADE, default='Order name')
+    country = models.CharField(max_length=30, choices=COUNTRY_CHOICES, default='')
+    city = models.CharField(max_length=30, default='')
+    address = models.CharField(max_length=300, default='')
+
 

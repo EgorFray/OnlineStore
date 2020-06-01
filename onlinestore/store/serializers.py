@@ -1,26 +1,38 @@
 from rest_framework import serializers
 
-from .models import Goods, Orders
+from .models import Goods, Orders, OrdersDetail
 
 
-class GamesSerializer(serializers.HyperlinkedModelSerializer):
+class GameItemSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name='games-item',
-        lookup_field='slug',
-        read_only=True
+        view_name='api-store:games-detail',
+        lookup_field='slug'
     )
+
     class Meta:
         model = Goods
-        fields = ['id', 'url', 'title', 'body', 'price', 'slug']
+        fields = ['url', 'title', 'body', 'price', 'slug']
 
 
-class GameItemSerializer(serializers.HyperlinkedModelSerializer):
+class GameCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Goods
-        fields = ['title', 'url', 'body', 'price', 'slug']
+        fields = ['title', 'body', 'price']
 
 
-class OrdersSerializer(serializers.HyperlinkedModelSerializer):
+class GamesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goods
+        fields = ['id', 'title', 'body', 'price', 'slug']
+
+
+class OrdersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
-        fields = ['url', 'items', 'delivery_method', 'payment_method']
+        fields = ['order_name', 'items', 'delivery_method', 'payment_method']
+
+
+class OrdersDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrdersDetail
+        fields = ['order_name', 'country', 'city', 'address']

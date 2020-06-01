@@ -2,13 +2,17 @@ from django.shortcuts import render
 from rest_framework.generics import (ListAPIView,
                                      RetrieveAPIView,
                                      RetrieveUpdateAPIView,
-                                     DestroyAPIView)
+                                     DestroyAPIView,
+                                     CreateAPIView,
+                                     )
 
 # Create your views here.
-from .models import Goods, Orders
+from .models import Goods, Orders, OrdersDetail
 from .serializers import (GamesSerializer,
                           GameItemSerializer,
-                          OrdersSerializer)
+                          OrdersSerializer,
+                          OrdersDetailSerializer,
+                          GameCreateSerializer)
 from rest_framework import viewsets
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
@@ -18,7 +22,12 @@ from rest_framework.response import Response
 class GamesListView(ListAPIView):
     queryset = Goods.objects.all()
     serializer_class = GamesSerializer
-    # serializer = GamesSerializer(queryset, context={'request':None})
+    lookup_field = 'slug'
+
+
+class GameCreateApiView(CreateAPIView):
+    queryset = Goods.objects.all()
+    serializer_class = GameCreateSerializer
 
 
 # Get detail of one game
@@ -46,19 +55,24 @@ class GamesDeleteView(DestroyAPIView):
 
 
 # View for Orders
-class OrdersView(RetrieveUpdateAPIView):
+class OrdersView(viewsets.ModelViewSet):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
-    lookup_field = 'orders'
-    lookup_url_kwarg = 'orders'
 
     def get_queryset(self):
         queryset = self.queryset.filter()
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(self.request)
+        serializer.save()
 
+
+class OrdersDetailView(viewsets.ModelViewSet):
+    queryset = OrdersDetail.objects.all()
+    serializer_class = OrdersDetailSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 
 
