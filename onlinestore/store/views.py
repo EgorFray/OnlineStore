@@ -1,63 +1,60 @@
-from django.shortcuts import render
 from rest_framework.generics import (ListAPIView,
                                      RetrieveAPIView,
                                      RetrieveUpdateAPIView,
                                      DestroyAPIView,
                                      CreateAPIView,
                                      )
-
-# Create your views here.
-from .models import Goods, Orders, OrdersDetail
+from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, AllowAny
+from .models import Goods, Orders
 from .serializers import (GamesSerializer,
                           GameItemSerializer,
                           OrdersSerializer,
-                          OrdersDetailSerializer,
                           GameCreateSerializer)
 from rest_framework import viewsets
-from rest_framework.reverse import reverse
 from rest_framework.response import Response
+from rest_framework import status
 
 
-# Get a list with all games
-class GamesListView(ListAPIView):
-    queryset = Goods.objects.all()
-    serializer_class = GamesSerializer
-    lookup_field = 'slug'
-
-
-class GameCreateApiView(CreateAPIView):
-    queryset = Goods.objects.all()
-    serializer_class = GameCreateSerializer
-
-
-# Get detail of one game
-class GamesDetailView(RetrieveAPIView):
-    queryset = Goods.objects.all()
-    serializer_class = GameItemSerializer
+class UltraGameView(viewsets.ViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = 'slug'
     lookup_url_kwarg = 'slug'
 
+    def list(self, request):
+        queryset = Goods.objects.all()
+        serializer = GamesSerializer(queryset, many=True)
+        return Response(serializer.data)
 
-# Update data of one game
-class GamesUpdateView(RetrieveUpdateAPIView):
-    queryset = Goods.objects.all()
-    serializer_class = GameItemSerializer
-    lookup_field = 'slug'
-    lookup_url_kwarg = 'slug'
+    def create(self, request):
+        queryset = Goods.objects.create()
+        serializer = GameCreateSerializer(queryset, data= request.data)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data)
 
+    def retrieve(self, request, slug=None):
+        queryset = Goods.objects.get(slug=slug)
+        serializer = GameItemSerializer(queryset)
+        return Response(serializer.data)
 
-# Delete data of one game
-class GamesDeleteView(DestroyAPIView):
-    queryset = Goods.objects.all()
-    serializer_class = GameItemSerializer
-    lookup_field = 'slug'
-    lookup_url_kwarg = 'slug'
+    def update(self, request, slug=None):
+        queryset = Goods.objects.get(slug=slug)
+        serializer = GameItemSerializer(queryset, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data)
+
+    def destroy(self, request, slug=None):
+        queryset = Goods.objects.get(slug=slug)
+        queryset.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # View for Orders
 class OrdersView(viewsets.ModelViewSet):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = self.queryset.filter()
@@ -66,13 +63,6 @@ class OrdersView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
 
-
-class OrdersDetailView(viewsets.ModelViewSet):
-    queryset = OrdersDetail.objects.all()
-    serializer_class = OrdersDetailSerializer
-
-    def perform_create(self, serializer):
-        serializer.save()
 
 
 

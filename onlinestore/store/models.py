@@ -28,24 +28,22 @@ class Orders(models.Model):
         ('Card', 'Card'),
         ('Cash', 'Cash')
     ]
+    COUNTRY_CHOICES = [
+        ('Ukraine', 'Ukraine'),
+        ('Russia', 'Russia')
+    ]
     order_name = models.CharField(max_length=20, default='Order name')
     date_created = models.DateTimeField(auto_now_add=True)
-    items = models.ForeignKey(Goods, on_delete=models.CASCADE, default='')
+    items = models.ManyToManyField(Goods, default='')
     delivery_method = models.CharField(max_length=30, choices=DELIVERY_CHOICES, default='')
     payment_method = models.CharField(max_length=30, choices=PAYMENT_CHOICES, default='')
+    country = models.CharField(max_length=30, choices=COUNTRY_CHOICES, default='')
+    city = models.CharField(max_length=30, default='')
+    address = models.CharField(max_length=300, default='')
 
     def __str__(self):
         return self.order_name
 
 
-class OrdersDetail(models.Model):
-    COUNTRY_CHOICES = [
-        ('Ukraine', 'Ukraine'),
-        ('Russia', 'Russia')
-    ]
-    order_name = models.ForeignKey(Orders, on_delete=models.CASCADE, default='Order name')
-    country = models.CharField(max_length=30, choices=COUNTRY_CHOICES, default='')
-    city = models.CharField(max_length=30, default='')
-    address = models.CharField(max_length=300, default='')
 
 
