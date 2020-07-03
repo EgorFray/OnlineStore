@@ -1,5 +1,4 @@
 from django.db import models
-from rest_framework.reverse import reverse
 from django.utils.text import slugify
 
 
@@ -32,7 +31,6 @@ class Orders(models.Model):
         ('Ukraine', 'Ukraine'),
         ('Russia', 'Russia')
     ]
-    order_name = models.CharField(max_length=20, default='Order name')
     date_created = models.DateTimeField(auto_now_add=True)
     items = models.ManyToManyField(Goods, default='')
     delivery_method = models.CharField(max_length=30, choices=DELIVERY_CHOICES, default='')
@@ -41,8 +39,9 @@ class Orders(models.Model):
     city = models.CharField(max_length=30, default='')
     address = models.CharField(max_length=300, default='')
 
-    def __str__(self):
-        return self.order_name
+#    def __str__(self):
+#        return self.order_name
+
 
 
 

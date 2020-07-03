@@ -1,9 +1,4 @@
-from rest_framework.generics import (ListAPIView,
-                                     RetrieveAPIView,
-                                     RetrieveUpdateAPIView,
-                                     DestroyAPIView,
-                                     CreateAPIView,
-                                     )
+
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, AllowAny
 from .models import Goods, Orders
 from .serializers import (GamesSerializer,
@@ -22,7 +17,7 @@ class UltraGameView(viewsets.ViewSet):
 
     def list(self, request):
         queryset = Goods.objects.all()
-        serializer = GamesSerializer(queryset, many=True)
+        serializer = GameItemSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def create(self, request):
@@ -34,12 +29,12 @@ class UltraGameView(viewsets.ViewSet):
 
     def retrieve(self, request, slug=None):
         queryset = Goods.objects.get(slug=slug)
-        serializer = GameItemSerializer(queryset)
+        serializer = GamesSerializer(queryset)
         return Response(serializer.data)
 
     def update(self, request, slug=None):
         queryset = Goods.objects.get(slug=slug)
-        serializer = GameItemSerializer(queryset, data=request.data)
+        serializer = GamesSerializer(queryset, data=request.data)
         if serializer.is_valid():
             serializer.save()
         return Response(serializer.data)
@@ -56,12 +51,17 @@ class OrdersView(viewsets.ModelViewSet):
     serializer_class = OrdersSerializer
     permission_classes = [AllowAny]
 
-    def get_queryset(self):
-        queryset = self.queryset.filter()
-        return queryset
+#    def post(self, request, *args, **kwargs):
+#        serializer = OrdersSerializer(data=request.data)
+#        if serializer.is_valid():
+#            order = serializer.save()
+#            serializer = OrdersSerializer(order)
+#            return Response(serializer.data, status=status.HTTP_201_CREATED)
+#        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_create(self, serializer):
-        serializer.save()
+
+
+
 
 
 

@@ -84,10 +84,11 @@ DATABASES = {
         'HOST': config('DB_HOST'),
         'PORT': '3306',
         'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD')
+        'PASSWORD': config('DB_PASSWORD'),
+        'OPTIONS': {
+            "init_command": "SET foreign_key_checks = 0;"}
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
