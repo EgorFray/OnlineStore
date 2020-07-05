@@ -4,10 +4,17 @@ from django.utils.text import slugify
 
 # Create your models here.
 class Goods(models.Model):
+    class Meta:
+        ordering = ['id']
+
+    CURRENCY_CHOICES = [
+        ('UAH', 'UAH')
+    ]
     title = models.CharField(max_length=50, null=False, blank=False)
     body = models.TextField(max_length=5000, null=False, blank=False)
-    price = models.CharField(max_length=20, null=False, blank=False)
-    slug = models.SlugField(blank=True, unique=False)
+    price = models.IntegerField(unique=False)
+    currency = models.CharField(max_length=10, null=True, choices=CURRENCY_CHOICES)
+    slug = models.SlugField(blank=True, unique=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -32,15 +39,14 @@ class Orders(models.Model):
         ('Russia', 'Russia')
     ]
     date_created = models.DateTimeField(auto_now_add=True)
-    items = models.ManyToManyField(Goods, default='')
-    delivery_method = models.CharField(max_length=30, choices=DELIVERY_CHOICES, default='')
-    payment_method = models.CharField(max_length=30, choices=PAYMENT_CHOICES, default='')
-    country = models.CharField(max_length=30, choices=COUNTRY_CHOICES, default='')
-    city = models.CharField(max_length=30, default='')
-    address = models.CharField(max_length=300, default='')
+    items = models.ManyToManyField(Goods)
+    delivery_method = models.CharField(max_length=30, choices=DELIVERY_CHOICES)
+    payment_method = models.CharField(max_length=30, choices=PAYMENT_CHOICES)
+    country = models.CharField(max_length=30, choices=COUNTRY_CHOICES)
+    city = models.CharField(max_length=30)
+    address = models.CharField(max_length=60)
 
-#    def __str__(self):
-#        return self.order_name
+
 
 
 

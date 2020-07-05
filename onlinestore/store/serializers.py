@@ -2,22 +2,17 @@ from rest_framework import serializers
 
 from .models import Goods, Orders
 
+
 class GameItemSerializer(serializers. ModelSerializer):
     class Meta:
         model = Goods
-        fields = ['title', 'body', 'price', 'slug']
+        fields = ['id', 'title', 'body', 'price', 'currency', 'slug']
 
 
 class GameCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Goods
-        fields = ['title', 'body', 'price']
-
-
-class GamesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Goods
-        fields = ['id', 'title', 'body', 'price', 'slug']
+        fields = ['title', 'body', 'price', 'currency']
 
 
 class OrdersSerializer(serializers.ModelSerializer):
